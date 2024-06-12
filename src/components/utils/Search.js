@@ -72,7 +72,7 @@ const Search = () => {
     if (lat && long !== 0) {
       fetchLocation();
     }
-  }, [fetchLocation, lat, long]); // Include fetchLocation, lat, and long in the dependency array
+  }, [fetchLocation, lat, long]);
 
   return (
     <div>
@@ -94,10 +94,8 @@ const Search = () => {
             }, 100)
           }
         />
-        <button onClick={(e) => handleButton(e.target)}>
-          <a className="flex justify-center h-[59px] w-[58px] backdrop-blur-lg rounded-xl drop-shadow-lg ml-12 mr-8">
+        <button onClick={(e) => handleButton(e.target)} className="flex justify-center h-[59px] w-[58px] backdrop-blur-lg rounded-xl drop-shadow-lg ml-12 mr-8">
             <i className="ri-search-line ri-xl text-white  self-center "></i>
-          </a>
         </button>
       </div>
       {!isTyping ? (

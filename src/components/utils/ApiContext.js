@@ -1,5 +1,5 @@
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import React, { useContext, useEffect, useState, useCallback } from "react";
 
 const ApiContext = createContext();
 
@@ -16,32 +16,28 @@ function ApiProvider({ children }) {
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
 
-  const fetchData = useCallback(() => {
-    const options = {
-      method: "GET",
-      url: apiUrl,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+  const apiUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q=${searchQuery}&dt=2023-05-04&lang=tr&aqi=yes`;
+  const geoUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q=${lat},${long}&dt=2023-05-04&lang=tr&aqi=yes`;
+  const searchApiUrl = `https://api.weatherapi.com/v1/search.json?key=65523c9d178e4968bda101614241206&q=${searchText}`;
 
-    axios
-      .request(options)
-      .then((response) => {
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setAlert(true);
-        setError(err);
-        console.clear();
-      });
-  }, []);
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get(apiUrl);
+      setData(response.data);
+      setLoading(false);
+    } catch (err) {
+      setAlert(true);
+      setError(err);
+      console.clear();
+    }
+  }, [apiUrl]); // Include apiUrl in the dependency array
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchData();
     }, 1000);
+
+    return () => clearTimeout(timer);
   }, [fetchData]);
 
   const fetchSearch = useCallback(async () => {
@@ -53,13 +49,22 @@ function ApiProvider({ children }) {
       setError(err);
       console.clear();
     }
-  }, [searchApiUrl]);
+  }, [searchApiUrl]); // Include searchApiUrl in the dependency array
 
   useEffect(() => {
     fetchSearch();
   }, [fetchSearch]);
-
-  // Rest of your code...
+  
+  const fetchLocation = useCallback(async () => {
+    try {
+      const res = await axios.get(geoUrl);
+      setData(res.data);
+    } catch (err) {
+      setAlert(true);
+      setError(err);
+      console.clear();
+    }
+  }, [geoUrl]); // Include geoUrl in the dependency array
 
   return (
     <ApiContext.Provider
@@ -81,7 +86,7 @@ function ApiProvider({ children }) {
         setLong,
         fetchLocation,
         lat,
-        long,
+        long
       }}
     >
       {children}
