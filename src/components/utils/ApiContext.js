@@ -1,9 +1,7 @@
-// ApiContext.js
-
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 
-const ApiContext = React.createContext();
+const ApiContext = createContext();
 
 export const useApiContext = () => useContext(ApiContext);
 
@@ -17,12 +15,8 @@ function ApiProvider({ children }) {
   const [error, setError] = useState(null);
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
- 
-  const apiUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q="${searchQuery}"&dt=2023-05-04&lang=tr&aqi=yes`;
-  const geoUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q=${lat},${long}&dt=2023-05-04&lang=tr&aqi=yes`;
-  const searchApiUrl = `https://api.weatherapi.com/v1/search.json?key=65523c9d178e4968bda101614241206&q="${searchText}"`;
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     const options = {
       method: "GET",
       url: apiUrl,
@@ -42,15 +36,15 @@ function ApiProvider({ children }) {
         setError(err);
         console.clear();
       });
-  };
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
       fetchData();
     }, 1000);
-  }, [fetchData]); // Include fetchData in the dependency array
+  }, [fetchData]);
 
-  const fetchSearch = async () => {
+  const fetchSearch = useCallback(async () => {
     try {
       const res = await axios.get(searchApiUrl);
       setSearchData(res.data);
@@ -59,22 +53,13 @@ function ApiProvider({ children }) {
       setError(err);
       console.clear();
     }
-  };
+  }, [searchApiUrl]);
 
   useEffect(() => {
     fetchSearch();
-  }, [searchApiUrl, fetchSearch]); // Include searchApiUrl and fetchSearch in the dependency array
-  
-  const fetchLocation = async () => {
-    try {
-      const res = await axios.get(geoUrl);
-      setData(res.data);
-    } catch (err) {
-      setAlert(true);
-      setError(err);
-      console.clear();
-    }
-  };
+  }, [fetchSearch]);
+
+  // Rest of your code...
 
   return (
     <ApiContext.Provider
@@ -96,7 +81,7 @@ function ApiProvider({ children }) {
         setLong,
         fetchLocation,
         lat,
-        long
+        long,
       }}
     >
       {children}
