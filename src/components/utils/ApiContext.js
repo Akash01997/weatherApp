@@ -1,8 +1,9 @@
-import axios from "axios";
-import React, { useContext } from "react";
-import { createContext, useEffect, useState } from "react";
+// ApiContext.js
 
-const ApiContext = createContext();
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+
+const ApiContext = React.createContext();
 
 export const useApiContext = () => useContext(ApiContext);
 
@@ -17,14 +18,10 @@ function ApiProvider({ children }) {
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
  
-  // you can change &lang parameter for your language
-  
- // const apiKey = "65523c9d178e4968bda101614241206";
   const apiUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q="${searchQuery}"&dt=2023-05-04&lang=tr&aqi=yes`;
   const geoUrl = `https://api.weatherapi.com/v1/current.json?key=65523c9d178e4968bda101614241206&q=${lat},${long}&dt=2023-05-04&lang=tr&aqi=yes`;
   const searchApiUrl = `https://api.weatherapi.com/v1/search.json?key=65523c9d178e4968bda101614241206&q="${searchText}"`;
 
-  
   const fetchData = () => {
     const options = {
       method: "GET",
@@ -51,9 +48,8 @@ function ApiProvider({ children }) {
     setTimeout(() => {
       fetchData();
     }, 1000);
-  }, []);
+  }, [fetchData]); // Include fetchData in the dependency array
 
-  
   const fetchSearch = async () => {
     try {
       const res = await axios.get(searchApiUrl);
@@ -67,7 +63,7 @@ function ApiProvider({ children }) {
 
   useEffect(() => {
     fetchSearch();
-  }, [searchApiUrl]);
+  }, [searchApiUrl, fetchSearch]); // Include searchApiUrl and fetchSearch in the dependency array
   
   const fetchLocation = async () => {
     try {

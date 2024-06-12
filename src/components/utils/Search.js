@@ -1,6 +1,5 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useApiContext } from "./ApiContext";
-
 import { Input } from "@material-tailwind/react";
 
 const Search = () => {
@@ -44,45 +43,43 @@ const Search = () => {
       setIsTyping(false);
     }
   };
+
   const onSuggestionHandler = (city, country, region) => {
     setSearchQuery(city + "," + region + "," + country);
     setSearchText(city + "," + region + "," + country);
     setIsTyping(false);
   };
+
   const handleButton = (e) => {
     if (e) {
       fetchData();
     }
   };
-  const getLocation = (e) =>{
+
+  const getLocation = (e) => {
     e.preventDefault();
     try {
       navigator.geolocation.getCurrentPosition((position) => {
-            setLat(position.coords.latitude);
-            setLong(position.coords.longitude);
-            if(lat && long != 0 ){
-              fetchLocation()
-              }
-      })
+        setLat(position.coords.latitude);
+        setLong(position.coords.longitude);
+      });
+    } catch (err) {
+      setError(err);
     }
-      catch (err) {
-        setError(err)
-      }
-    
-  }
-useEffect(() => {
-  if(lat && long != 0 ){
-    fetchLocation()
-    }
-}, [lat,long])
+  };
 
- 
+  useEffect(() => {
+    if (lat && long !== 0) {
+      fetchLocation();
+    }
+  }, [fetchLocation, lat, long]); // Include fetchLocation, lat, and long in the dependency array
+
   return (
     <div>
       <div className="mt-10 flex align-center">
-        <a className="self-center cursor-pointer" onClick={getLocation}>
+        <button className="self-center cursor-pointer" onClick={getLocation}>
           <i className="ri-map-pin-2-line ri-xl text-white mr-8 ml-20 hover:text-indigo-600"></i>
-        </a>
+        </button>
         <Input
           variant="standard"
           color="indigo"
