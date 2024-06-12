@@ -61,6 +61,7 @@ function WeatherStatus() {
       "Rüzgarlı": "Windy",
       "Hafif rüzgarlı": "Light Wind",
       "Şiddetli rüzgarlı": "Severe Wind",
+      "Parçalı Bulutlu" : "Partly cloudy"
     };
     return conditions[condition] || condition;
   };
